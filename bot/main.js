@@ -1,10 +1,9 @@
-import { ChannelType, Client, GatewayIntentBits } from 'discord.js';
-import dotenv from 'dotenv';
-import express from 'express';
-import fs from 'node:fs';
-import cors from 'cors';
-import axios from 'axios';
-
+import { ChannelType, Client, GatewayIntentBits } from "discord.js";
+import dotenv from "dotenv";
+import express from "express";
+import fs from "node:fs";
+import cors from "cors";
+import axios from "axios";
 
 dotenv.config();
 
@@ -12,12 +11,12 @@ const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
 });
 const app = express();
-app.use(cors())
+app.use(cors());
 app.use(express.json());
 
 // Read sites configuration from JSON file
-const sitesFilePath = './sites.json';
-let sitesConfig = JSON.parse(fs.readFileSync(sitesFilePath, 'utf-8'));
+const sitesFilePath = "./sites.json";
+let sitesConfig = JSON.parse(fs.readFileSync(sitesFilePath, "utf-8"));
 
 // Helper function to update JSON file when new channels are created
 function updateSitesConfig() {
@@ -28,18 +27,38 @@ function updateSitesConfig() {
 async function setupChannels() {
   const guild = await client.guilds.fetch(process.env.DISCORD_GUILD_ID);
 
-
   for (const site of sitesConfig) {
-    if (!site.channelID) {
-      // Create a new channel with the site name
-      const channel = await guild.channels.create({
-        name: site.name.replace(/\s+/g, '-').toLowerCase(),
+    // Check if a channel with the given name already exists
+    let channel = guild.channels.cache.find(
+      (ch) => ch.name === site.name.replace(/\s+/g, "-").toLowerCase()
+    );
+
+    if (!channel) {
+      // If channel does not exist, create a new one
+      channel = await guild.channels.create({
+        name: site.name.replace(/\s+/g, "-").toLowerCase(),
         type: ChannelType.GuildText,
         topic: site.description,
+        permissionOverwrites: [
+          {
+            id: guild.id, // The guild's @everyone role
+            deny: ["SendMessages", "ViewChannel"],
+          },
+          {
+            id: client.user.id, // Bot user ID
+            allow: ["SendMessages", "ViewChannel"],
+          },
+        ],
       });
+
       console.log(`Created new channel for ${site.name}: ${channel.id}`);
 
       // Update the site's channelID in the JSON file and save
+      site.channelID = channel.id;
+      updateSitesConfig();
+    } else {
+      console.log(`Channel for ${site.name} already exists: ${channel.id}`);
+      // Update channelID in case it was missing
       site.channelID = channel.id;
       updateSitesConfig();
     }
@@ -47,40 +66,41 @@ async function setupChannels() {
 }
 
 // Discord bot login and setup channels
-client.once('ready', () => {
+client.once("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
   setupChannels().catch(console.error);
 });
 
 client.login(process.env.DISCORD_TOKEN);
 
-
-
 // Endpoint to handle analytics data
-app.post('/track', async (req, res) => {
-  const {  eventType, page, referrer, timestamp, sessionId, deviceInfo, url } = req.body;
-  const clientIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+app.post("/track", async (req, res) => {
+  const { eventType, page, referrer, timestamp, sessionId, deviceInfo, url } =
+    req.body;
+  const clientIP = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
   // Fetch location info using IP (using ip-api.com here for simplicity)
   let locationData = {};
   try {
-    const locationResponse = await axios.get(`http://ip-api.com/json/${clientIP}`);
+    const locationResponse = await axios.get(
+      `http://ip-api.com/json/${clientIP}`
+    );
     locationData = {
       ip: clientIP,
       city: locationResponse.data.city,
       country: locationResponse.data.country,
       region: locationResponse.data.regionName,
       lat: locationResponse.data.lat,
-      lon: locationResponse.data.lon
+      lon: locationResponse.data.lon,
     };
   } catch (error) {
     console.error("Error fetching location data:", error);
     locationData = { ip: clientIP, city: "Unknown", country: "Unknown" };
   }
   // Find the site configuration based on URL
-  const site = sitesConfig.find(site => site.url === url);
+  const site = sitesConfig.find((site) => site.url === url);
   if (!site) {
-    return res.status(400).send('Site not found');
+    return res.status(400).send("Site not found");
   }
   const messageData = {
     event: eventType,
@@ -89,26 +109,28 @@ app.post('/track', async (req, res) => {
     timestamp: timestamp,
     session_id: sessionId,
     device_info: `${deviceInfo.platform}, ${deviceInfo.userAgent}`,
-    location: locationData
+    location: locationData,
   };
 
   // Send the message to the specific channel for the site
   try {
     const channel = await client.channels.fetch(site.channelID);
     if (channel) {
-      await channel.send(`\`\`\`json\n${JSON.stringify(messageData, null, 2)}\n\`\`\``);
-      res.status(200).send('Event tracked successfully');
+      await channel.send(
+        `\`\`\`json\n${JSON.stringify(messageData, null, 2)}\n\`\`\``
+      );
+      res.status(200).send("Event tracked successfully");
     } else {
-      res.status(500).send('Channel not found');
+      res.status(500).send("Channel not found");
     }
   } catch (error) {
     console.error("Error sending message to Discord:", error);
-    res.status(500).send('Error tracking event');
+    res.status(500).send("Error tracking event");
   }
 });
 
 // Endpoint to fetch analytics data for the dashboard
-app.get('/analytics', async (req, res) => {
+app.get("/analytics", async (req, res) => {
   try {
     const dashboardData = {};
 
@@ -126,8 +148,10 @@ app.get('/analytics', async (req, res) => {
 
       messages.forEach((message) => {
         // Here, parse the message content into structured data
-        const jsonData = JSON.parse(message.content.replace(/```json|```/g, '').trim());
-          siteData.push(jsonData);
+        const jsonData = JSON.parse(
+          message.content.replace(/```json|```/g, "").trim()
+        );
+        siteData.push(jsonData);
       });
 
       // Store the parsed data for each site
@@ -136,10 +160,9 @@ app.get('/analytics', async (req, res) => {
 
     // Send the collected analytics data
     res.status(200).json(dashboardData);
-
   } catch (error) {
     console.error("Error fetching analytics data:", error);
-    res.status(500).json({ error: 'Failed to fetch analytics data' });
+    res.status(500).json({ error: "Failed to fetch analytics data" });
   }
 });
 
