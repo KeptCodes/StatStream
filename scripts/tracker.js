@@ -20,7 +20,7 @@
   // Function to send tracking data
   const sendAnalytics = async (eventType, additionalData = {}) => {
     try {
-      await fetch("http://change.url/track", {
+      await fetch("https://statstream.onrender.com/track", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
