@@ -5,10 +5,8 @@ services:
     environment:
       - DISCORD_TOKEN=${DISCORD_TOKEN}
       - DISCORD_GUILD_ID=${DISCORD_GUILD_ID}
-      - PORT=3000
+      - PORT=${PORT}
     env_file: ".env"
     ports:
       - "3000:3000"
-    volumes:
-      - ./sites.json:/usr/src/app/sites.json
     restart: always

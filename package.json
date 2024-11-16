@@ -1,10 +1,10 @@
 {
-  "name": "bot",
+  "name": "statstream",
   "version": "1.0.0",
-  "main": "out/main.js",
+  "main": "build/main.js",
   "scripts": {
-    "build": "npx tsc",
-    "start": "node out/main.js",
+    "build": "tsc",
+    "start": "node build/main.js",
     "dev": "ts-node-dev --respawn --transpile-only src/main.ts"
   },
   "keywords": [],
