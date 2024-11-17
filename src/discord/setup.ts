@@ -5,6 +5,7 @@ import {
   ChannelType,
   Client,
   PermissionsBitField,
+  TextChannel,
 } from "discord.js";
 import env from "../lib/env";
 import { channels, ids } from "../lib/constants";
@@ -108,15 +109,13 @@ export async function setupAddSitesChannel(client: Client<true>) {
 // Function to rebuild site configurations from the "config" channel
 export async function rebuildSitesConfig(client: Client<true>) {
   const guild = await client.guilds.fetch(env.DISCORD_GUILD_ID);
+
   const configChannel = guild.channels.cache.find(
     (ch) => ch.name === channels.CONFIG
-  );
+  ) as TextChannel;
 
   if (!configChannel) {
     console.warn('The "config" channel does not exist.');
-    return;
-  }
-  if (configChannel.type != ChannelType.GuildText) {
     return;
   }
 

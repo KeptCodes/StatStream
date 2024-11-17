@@ -3,7 +3,7 @@ import { TrackedDataSchema } from "../lib/schema";
 import { fetchLocationData } from "../lib/utils";
 import { sitesConfig } from "../lib/sitesConfig";
 import client from "../lib/discord";
-import { ChannelType } from "discord.js";
+import { ChannelType, TextChannel } from "discord.js";
 
 export const trackAction = async (
   req: Request,
@@ -41,8 +41,11 @@ export const trackAction = async (
       location: locationData,
     };
 
-    const channel = await client.channels.fetch(site.channelID);
-    if (channel && channel.type == ChannelType.GuildText) {
+    const channel = (await client.channels.fetch(
+      site.channelID
+    )) as TextChannel;
+
+    if (channel) {
       await channel.send(
         `\`\`\`json\n${JSON.stringify(messageData, null, 2)}\n\`\`\``
       );
@@ -65,7 +68,6 @@ export const sendAnalytics = async (
     for (const site of sitesConfig) {
       const channel = await client.channels.fetch(site.channelID);
       if (!channel) {
-        console.error(`Channel not found for site: ${site.name}`);
         continue;
       }
       if (channel.type != ChannelType.GuildText) {
@@ -81,9 +83,7 @@ export const sendAnalytics = async (
             message.content.replace(/```json|```/g, "").trim()
           );
           siteData.push(jsonData);
-        } catch (error) {
-          console.warn("Skipping invalid message:", error);
-        }
+        } catch (error) {}
       });
 
       // Aggregate data for this site
@@ -119,7 +119,6 @@ export const sendAnalytics = async (
     // Send the collected analytics data
     res.status(200).json(dashboardData);
   } catch (error) {
-    console.error("Error fetching analytics data:", error);
     res.status(500).json({ error: "Failed to fetch analytics data" });
   }
 };

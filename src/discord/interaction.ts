@@ -15,17 +15,15 @@ import { sitesConfig } from "../lib/sitesConfig";
 
 export async function handleModals(interaction: Interaction<CacheType>) {
   if (!interaction.isButton()) return;
+
   if (interaction.customId === ids.addButton) {
     await addSiteForm(interaction);
-    return;
   }
   if (interaction.customId === ids.editButton) {
     await editSiteForm(interaction);
-    return;
   }
   if (interaction.customId === ids.deleteButton) {
     await deleteSiteForm(interaction);
-    return;
   }
 }
 
@@ -33,21 +31,17 @@ export async function handleSubmissions(interaction: Interaction<CacheType>) {
   if (interaction.type != InteractionType.ModalSubmit) return;
   if (interaction.customId === ids.addSiteModal) {
     await addSiteSubmission(interaction);
-    return;
   }
   if (interaction.customId === ids.editSiteModal) {
     await editSiteSubmission(interaction);
-    return;
   }
   if (interaction.customId === ids.deleteSiteModal) {
     await deleteSiteSubmission(interaction);
-    return;
   }
 }
 
 export async function addSiteForm(interaction: Interaction<CacheType>) {
   if (!interaction.isButton()) return;
-
   const modal = new ModalBuilder()
     .setCustomId(ids.addSiteModal)
     .setTitle("Add New Site");
