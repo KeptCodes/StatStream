@@ -32,16 +32,22 @@ export const mockGuild = {
   } as unknown as jest.Mocked<GuildChannelManager>,
 } as unknown as jest.Mocked<Guild>;
 
+const site = {
+  url: "https://example.com",
+  name: "Example Site",
+  description: "Description of the site",
+};
+
 // Mocked channel
 export const mockConfigChannel = {
   id: "mock-config-channel-id",
   name: channels.CONFIG,
   type: ChannelType.GuildText,
-  send: jest.fn(),
+  send: jest.fn().mockResolvedValue(true),
   messages: {
     fetch: jest.fn(),
   },
-} as unknown as jest.Mocked<TextChannel>;
+} as unknown as jest.Mocked<any>;
 
 // Mocked channel
 export const mockAddSiteChannel = {
@@ -56,3 +62,10 @@ export const mockAddSiteChannel = {
 
 // Mock implementation of fetching a guild in the client
 mockClient.guilds.fetch = jest.fn().mockResolvedValue(mockGuild);
+mockConfigChannel.messages.fetch = jest.fn().mockResolvedValue([
+  {
+    content: `\`\`\`json\n${JSON.stringify(site)}\n\`\`\``, // Initial message
+    edit: jest.fn().mockResolvedValue(true), // Mock successful edit
+    delete: jest.fn().mockResolvedValue(true), // Mock successful edit
+  },
+]);

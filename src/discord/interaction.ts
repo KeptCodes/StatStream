@@ -6,6 +6,7 @@ import {
   InteractionType,
   ModalBuilder,
   PermissionsBitField,
+  TextChannel,
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
@@ -262,12 +263,9 @@ export async function editSiteSubmission(interaction: Interaction<CacheType>) {
   const guild = interaction.guild!;
   const configChannel = guild.channels.cache.find(
     (ch) => ch.name === channels.CONFIG
-  );
+  ) as TextChannel;
 
   if (configChannel) {
-    if (configChannel.type != ChannelType.GuildText) {
-      return;
-    }
     const messages = await configChannel.messages.fetch({ limit: 100 });
     const configMessage = messages.find((msg) =>
       msg.content.includes(`"${oldUrl}"`)
@@ -323,12 +321,9 @@ export async function deleteSiteSubmission(
 
   const configChannel = guild.channels.cache.find(
     (ch) => ch.name === channels.CONFIG
-  );
+  ) as TextChannel;
 
   if (configChannel) {
-    if (configChannel.type != ChannelType.GuildText) {
-      return;
-    }
     // Find the message that contains the site config and delete it
     const messages = await configChannel.messages.fetch({ limit: 100 });
     const siteMessage = messages.find((message) =>
