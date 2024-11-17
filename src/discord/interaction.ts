@@ -44,8 +44,9 @@ export async function handleSubmissions(interaction: Interaction<CacheType>) {
   }
 }
 
-async function addSiteForm(interaction: Interaction<CacheType>) {
+export async function addSiteForm(interaction: Interaction<CacheType>) {
   if (!interaction.isButton()) return;
+
   const modal = new ModalBuilder()
     .setCustomId(ids.addSiteModal)
     .setTitle("Add New Site");
@@ -87,7 +88,7 @@ async function addSiteForm(interaction: Interaction<CacheType>) {
   await interaction.showModal(modal);
 }
 
-async function editSiteForm(interaction: Interaction<CacheType>) {
+export async function editSiteForm(interaction: Interaction<CacheType>) {
   if (!interaction.isButton()) return;
   const modal = new ModalBuilder()
     .setCustomId(ids.editSiteModal)
@@ -142,7 +143,7 @@ async function editSiteForm(interaction: Interaction<CacheType>) {
   await interaction.showModal(modal);
 }
 
-async function deleteSiteForm(interaction: Interaction<CacheType>) {
+export async function deleteSiteForm(interaction: Interaction<CacheType>) {
   if (!interaction.isButton()) return;
   const modal = new ModalBuilder()
     .setCustomId(ids.deleteSiteModal)
@@ -163,7 +164,7 @@ async function deleteSiteForm(interaction: Interaction<CacheType>) {
   await interaction.showModal(modal);
 }
 
-async function addSiteSubmission(interaction: Interaction<CacheType>) {
+export async function addSiteSubmission(interaction: Interaction<CacheType>) {
   if (interaction.type != InteractionType.ModalSubmit) return;
 
   const url = interaction.fields
@@ -213,7 +214,9 @@ async function addSiteSubmission(interaction: Interaction<CacheType>) {
   };
   sitesConfig.push(site);
   // Save the configuration to the "config" channel
-  const configChannel = guild.channels.cache.find((ch) => ch.name === "config");
+  const configChannel = guild.channels.cache.find(
+    (ch) => ch.name === channels.CONFIG
+  );
   if (configChannel && configChannel.type == ChannelType.GuildText) {
     try {
       await configChannel.send(
@@ -230,7 +233,7 @@ async function addSiteSubmission(interaction: Interaction<CacheType>) {
   });
 }
 
-async function editSiteSubmission(interaction: Interaction<CacheType>) {
+export async function editSiteSubmission(interaction: Interaction<CacheType>) {
   if (interaction.type != InteractionType.ModalSubmit) return;
   const oldUrl = interaction.fields.getTextInputValue(ids.oldSiteURL);
   const newUrl = interaction.fields
@@ -286,7 +289,9 @@ async function editSiteSubmission(interaction: Interaction<CacheType>) {
   });
 }
 
-async function deleteSiteSubmission(interaction: Interaction<CacheType>) {
+export async function deleteSiteSubmission(
+  interaction: Interaction<CacheType>
+) {
   if (interaction.type != InteractionType.ModalSubmit) return;
   const urlToDelete = interaction.fields
     .getTextInputValue(ids.siteURL)

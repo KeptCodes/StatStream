@@ -24,6 +24,7 @@ import {
 describe("setupConfigChannel", () => {
   beforeEach(() => {
     mockGuild.channels.cache.set(channels.CONFIG, mockConfigChannel);
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
@@ -70,6 +71,7 @@ describe("setupConfigChannel", () => {
 
 describe("setupAddSitesChannel", () => {
   beforeEach(() => {
+    jest.clearAllMocks();
     mockGuild.channels.cache.set(channels.ADDSITES, mockAddSiteChannel);
   });
 
@@ -114,7 +116,7 @@ describe("setupAddSitesChannel", () => {
     } as unknown as VoiceChannel;
 
     mockGuild.channels.cache.set(channels.ADDSITES, invalidChannel);
-    console.log(invalidChannel.type);
+
     await setupAddSitesChannel(mockClient);
 
     expect(mockAddSiteChannel.send).not.toHaveBeenCalled();
@@ -124,6 +126,7 @@ describe("setupAddSitesChannel", () => {
 describe("rebuildSitesConfig", () => {
   beforeEach(() => {
     sitesConfig.length = 0;
+    jest.clearAllMocks();
   });
 
   afterEach(() => {

@@ -7,6 +7,12 @@ import {
   ChannelType,
 } from "discord.js";
 
+// Mocked constants (for channel names, IDs, etc.)
+export const channels = {
+  CONFIG: "config",
+  ADDSITES: "add-sites",
+};
+
 // Mocked Discord.js client
 export const mockClient = {
   guilds: {
@@ -26,17 +32,11 @@ export const mockGuild = {
   } as unknown as jest.Mocked<GuildChannelManager>,
 } as unknown as jest.Mocked<Guild>;
 
-// Mocked constants (for channel names, IDs, etc.)
-export const channels = {
-  CONFIG: "config",
-  ADDSITES: "add-sites",
-};
-
 // Mocked channel
 export const mockConfigChannel = {
   id: "mock-config-channel-id",
   name: channels.CONFIG,
-  type: ChannelType.GuildText, // GuildText
+  type: ChannelType.GuildText,
   send: jest.fn(),
   messages: {
     fetch: jest.fn(),
@@ -47,7 +47,7 @@ export const mockConfigChannel = {
 export const mockAddSiteChannel = {
   id: "mock-addsite-channel-id",
   name: channels.ADDSITES,
-  type: ChannelType.GuildText, // GuildText
+  type: ChannelType.GuildText,
   send: jest.fn(),
   messages: {
     fetch: jest.fn(),
