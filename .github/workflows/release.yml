@@ -30,17 +30,6 @@ jobs:
       - name: Install dependencies
         run: npm install # or 'bun install' if you're using Bun
 
-      - name: Set version based on branch
-        id: version
-        run: |
-          if [ "${GITHUB_REF}" == "refs/heads/dev" ]; then
-            VERSION="canary-${GITHUB_SHA}"
-            echo "Versioning as Canary: $VERSION"
-          else
-            VERSION="v$(stable-${GITHUB_SHA})"
-            echo "Versioning as Stable: $VERSION"
-          fi
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: Set up GitHub Token
         run: |
           echo "GITHUB_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }}" >> $GITHUB_ENV
