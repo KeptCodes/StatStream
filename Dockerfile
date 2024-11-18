@@ -35,4 +35,4 @@ USER bun
 EXPOSE 3000
 
 # Start the application using Bun
-ENTRYPOINT ["bun", "build/main.js"]
+ENTRYPOINT ["bun","run", "build/src/main.js"]
