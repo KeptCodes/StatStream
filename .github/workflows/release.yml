@@ -47,7 +47,7 @@ jobs:
       - name: Push changes
         run: git push --follow-tags # Push the new release and tags back to the repository
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN  }}
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
@@ -58,4 +58,4 @@ jobs:
             Changelog:
             ${{ steps.changelog.outputs.changelog }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN  }}
