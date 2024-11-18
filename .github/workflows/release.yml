@@ -3,12 +3,12 @@ name: Release
 on:
   workflow_run:
     workflows:
-      - Test # The name of the Test workflow
+      - Test
     types:
       - completed
 
 permissions:
-  contents: read 
+  contents: read
 
 jobs:
   release:
