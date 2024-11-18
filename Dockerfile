@@ -11,6 +11,7 @@ RUN bun install --frozen-lockfile
 # Stage: Run tests
 FROM base AS test
 COPY . .
+RUN cp .env.example .env
 RUN bun run test
 
 # Stage: Build application
