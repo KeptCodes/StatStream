@@ -49,6 +49,7 @@ jobs:
         run: npm run release # or 'bun run release' if you're using Bun
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # Pass token for authentication
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push changes
         run: git push --follow-tags # Push the new release and tags back to the repository
