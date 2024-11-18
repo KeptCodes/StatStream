@@ -3,6 +3,9 @@
     <h2>StatStream Website Analytics Tool</h2>
 </div>
 
+![Docker](https://img.shields.io/docker/pulls/priyanshudev/statstream?label=Docker%20Pulls&style=flat-square)
+![Node.js](https://img.shields.io/badge/Node.js-%3E%3D%2020.x-brightgreen?style=flat-square)
+
 ### ⭐ About
 
 StatStream is a web analytics tracking project designed to monitor and store website statistics using Discord for reporting. The goal of this project is to track essential website data, such as traffic and user interactions, and send that data to a Discord channel using a custom bot.
@@ -18,7 +21,7 @@ StatStream is a web analytics tracking project designed to monitor and store web
 - [Node.js](https://nodejs.org/) (for the Discord bot backend)
 - [Discord bot](https://discord.com/developers/docs/intro) (with a bot token)
 - [Discord.js](https://discord.js.org/) (for Node.js Discord bot)
-  
+
 ### Installation
 
 #### Step 1: Setting up the Discord Bot
@@ -67,8 +70,6 @@ node main.js
 ### Usage
 
 Once everything is set up, your Discord bot will begin reporting the tracked website statistics in real-time. You can extend the functionality by adding more events and analytics to track.
-
-
 
 ### Contributing
 

@@ -19,6 +19,13 @@ jobs:
       id-token: write # Necessary for generating the ID token for authentication
 
     steps:
+      - name: "Generate token"
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.BOT_APP_ID }}
+          private_key: ${{ secrets.BOT_PRIVATE_KEY }}
+
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -32,15 +39,14 @@ jobs:
 
       - name: Set up GitHub Token
         run: |
-          echo "GITHUB_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }}" >> $GITHUB_ENV
+          echo "GITHUB_TOKEN=${{ steps.generate_token.outputs.token }}" >> $GITHUB_ENV
 
       - name: Run release
         run: npm run release # or 'bun run release' if you're using Bun
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }} # Pass token for authentication
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }} # Pass token for authentication
 
       - name: Push changes
         run: git push --follow-tags # Push the new release and tags back to the repository
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }} # Pass token for authentication
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }} # Pass token for authentication
