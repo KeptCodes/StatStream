@@ -4,6 +4,7 @@ import { fetchLocationData } from "../lib/utils";
 import { sitesConfig } from "../lib/sitesConfig";
 import client from "../lib/discord";
 import { ChannelType, TextChannel } from "discord.js";
+import logger from "../lib/logger";
 
 export const trackAction = async (
   req: Request,
@@ -14,22 +15,29 @@ export const trackAction = async (
 
     if (!success || !data) {
       const formattedErrors = error.errors.map((err) => ({
-        path: err.path.join("."), // This creates a dot notation path (e.g., 'user.name')
-        message: err.message, // The error message
+        path: err.path.join("."), // Dot notation path
+        message: err.message, // Error message
       }));
+      logger.warn("Validation failed for tracked data", { formattedErrors });
       res.status(400).json({
         message: "Validation failed",
         errors: formattedErrors,
       });
       return;
     }
+
+    logger.info("Validation successful", { data });
+
     const locationData = await fetchLocationData(req);
+    logger.debug("Fetched location data", { locationData });
 
     const site = sitesConfig.find((site) => site.url === data.url);
     if (!site) {
+      logger.warn(`Site not found for URL: ${data.url}`);
       res.status(400).send("Site not found");
       return;
     }
+
     const timestamp = new Date(data.timestamp);
     const messageData: AnalyticsEvent = {
       event: data.eventType,
@@ -46,14 +54,22 @@ export const trackAction = async (
     )) as TextChannel;
 
     if (channel) {
+      logger.info("Sending event data to Discord channel", {
+        channelID: site.channelID,
+        messageData,
+      });
       await channel.send(
         `\`\`\`json\n${JSON.stringify(messageData, null, 2)}\n\`\`\``
       );
       res.status(200).send("Event tracked successfully");
     } else {
+      logger.error("Discord channel not found", { channelID: site.channelID });
       res.status(500).send("Channel not found");
     }
   } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred";
+    logger.error("Error tracking event", { error: errorMessage });
     res.status(500).send("Error tracking event");
   }
 };
@@ -64,17 +80,25 @@ export const sendAnalytics = async (
 ): Promise<void> => {
   try {
     const dashboardData: DashboardData = {};
+
     // Loop through each site in the configuration
     for (const site of sitesConfig) {
       const channel = await client.channels.fetch(site.channelID);
       if (!channel) {
-        continue;
-      }
-      if (channel.type != ChannelType.GuildText) {
+        logger.warn("Channel not found", { channelID: site.channelID });
         continue;
       }
 
-      const messages = await channel.messages.fetch({ limit: 50 });
+      if (channel.type !== ChannelType.GuildText) {
+        logger.warn("Channel is not a text channel", {
+          channelID: site.channelID,
+        });
+        continue;
+      }
+
+      const messages = await (channel as TextChannel).messages.fetch({
+        limit: 50,
+      });
       const siteData: AnalyticsEvent[] = [];
 
       messages.forEach((message) => {
@@ -83,7 +107,16 @@ export const sendAnalytics = async (
             message.content.replace(/```json|```/g, "").trim()
           );
           siteData.push(jsonData);
-        } catch (error) {}
+        } catch (error) {
+          const parseErrorMessage =
+            error instanceof Error
+              ? error.message
+              : "An unknown error occurred while parsing message";
+          logger.debug("Failed to parse message as JSON", {
+            messageID: message.id,
+            error: parseErrorMessage,
+          });
+        }
       });
 
       // Aggregate data for this site
@@ -112,13 +145,22 @@ export const sendAnalytics = async (
           (aggregatedData.locations[locationKey] || 0) + 1;
       });
 
+      logger.info("Aggregated analytics for site", {
+        site: site.name,
+        aggregatedData,
+      });
+
       // Add aggregated data to dashboard
       dashboardData[site.name] = aggregatedData;
     }
 
     // Send the collected analytics data
+    logger.info("Sending aggregated analytics data", { dashboardData });
     res.status(200).json(dashboardData);
   } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred";
+    logger.error("Failed to fetch analytics data", { error: errorMessage });
     res.status(500).json({ error: "Failed to fetch analytics data" });
   }
 };

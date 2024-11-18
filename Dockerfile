@@ -1,41 +1,37 @@
-FROM oven/bun:1 AS base
+# Base image for development
+FROM oven/bun:alpine AS base
 WORKDIR /usr/src/app
 
-# install dependencies into temp directory
-# this will cache them and speed up future builds
-FROM base AS install
-RUN mkdir -p /temp/dev
-COPY package.json bun.lockb /temp/dev/
-RUN cd /temp/dev && bun install --frozen-lockfile
+# Copy package files early to leverage caching
+COPY package.json bun.lockb ./
 
-# install with --production (exclude devDependencies)
-RUN mkdir -p /temp/prod
-COPY package.json bun.lockb /temp/prod/
-RUN cd /temp/prod && bun install --frozen-lockfile --production
+# Install dependencies
+RUN bun install --frozen-lockfile
 
-# copy node_modules from temp directory
-# then copy all (non-ignored) project files into the image
-FROM base AS prerelease
-COPY --from=install /temp/dev/node_modules node_modules
+# Stage: Run tests
+FROM base AS test
 COPY . .
+RUN bun run test
 
-# build
-ENV NODE_ENV=production
+# Stage: Build application
+FROM base AS build
+COPY . .
 RUN bun run build
 
-# copy production dependencies and source code into final image
-FROM node:18-alpine AS release
+# Final image for production
+FROM oven/bun:alpine AS release
 WORKDIR /usr/src/app
 
-# Copy production node_modules
-COPY --from=install /temp/prod/node_modules /usr/src/app/node_modules
+# Copy production dependencies and build output from the build stage
+COPY --from=build /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/build ./build
+COPY --from=build /usr/src/app/package.json ./package.json
 
-# Copy build output and source files from prerelease stage
-COPY --from=prerelease /usr/src/app/build /usr/src/app/build
-COPY --from=prerelease /usr/src/app/package.json /usr/src/app/package.json
+# Use non-root user for security
+USER bun
 
-
-USER node
+# Expose application port
 EXPOSE 3000
 
-ENTRYPOINT ["node", "build/main.js" ]
+# Start the application using Bun
+ENTRYPOINT ["bun", "build/main.js"]
