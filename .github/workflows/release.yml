@@ -8,15 +8,16 @@ on:
       - completed
 
 permissions:
-  contents: read
+  contents: read  # Read access for the workflow
 
 jobs:
   release:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     permissions:
-      contents: write # to be able to publish a GitHub release
-      id-token: write
+      contents: write  # Write access to create releases and tags
+      id-token: write   # Necessary for generating the ID token for authentication
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -39,23 +40,28 @@ jobs:
             VERSION="v$(date +'%Y%m%d%H%M%S')"
             echo "Versioning as Stable: $VERSION"
           fi
-          echo "::set-output name=version::$VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV  # Use GITHUB_ENV instead of set-output
+      - name: Set up GitHub Token
+        run: |
+          echo "GITHUB_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }}" >> $GITHUB_ENV
 
       - name: Run release
         run: npm run release # or 'bun run release' if you're using Bun
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # Pass token for authentication
 
       - name: Push changes
         run: git push --follow-tags # Push the new release and tags back to the repository
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN  }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # Pass token for authentication
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
         with:
-          tag_name: ${{ steps.version.outputs.version }}
-          release_name: Release ${{ steps.version.outputs.version }}
+          tag_name: ${{ env.VERSION }}  # Use the version from GITHUB_ENV
+          release_name: Release ${{ env.VERSION }}
           body: |
             Changelog:
             ${{ steps.changelog.outputs.changelog }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN  }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # Pass token for authentication
