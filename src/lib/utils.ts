@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Request } from "express";
+import terser from "terser";
 
 export async function fetchLocationData(req: Request) {
   let clientIP: string;
@@ -40,4 +41,9 @@ export async function fetchLocationData(req: Request) {
   }
 
   return locationData;
+}
+
+export async function minify(script: string) {
+  const minified = await terser.minify(script, { ecma: 2020 });
+  return minified;
 }
