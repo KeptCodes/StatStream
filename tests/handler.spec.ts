@@ -17,7 +17,7 @@ import {
 } from "../src/discord/interaction";
 import { sitesConfig } from "../src/lib/sitesConfig";
 import { channels } from "../src/lib/constants";
-import * as interactionModule from "../src/discord/interaction";
+import logger from "../src/lib/logger";
 
 const mockConfigChannel = {
   id: "mock-config-channel-id",
@@ -28,7 +28,7 @@ const mockConfigChannel = {
     fetch: jest.fn(),
   },
 } as unknown as jest.Mocked<any>;
-const ids = {
+const ids: any = {
   addSiteModal: "add-site-modal",
   editSiteModal: "edit-site-modal",
   deleteSiteModal: "delete-site-modal",
@@ -41,7 +41,10 @@ const ids = {
   editButton: "edit-button",
   deleteButton: "delete-button",
 };
-
+jest.mock("../src/lib/logger", () => ({
+  error: jest.fn(),
+  warn: jest.fn(),
+}));
 describe("Handler Tests", () => {
   const mockInteraction: any = {
     isButton: jest.fn(),
@@ -404,10 +407,10 @@ describe("Handler Tests", () => {
 
       await addSiteSubmission(mockInteraction);
 
-      // Verify that the error is logged
-      expect(console.error).toHaveBeenCalledWith(
+      // Verify the logger.error was called
+      expect(logger.error as jest.Mock).toHaveBeenCalledWith(
         "Error saving site configuration:",
-        expect.any(Error)
+        expect.any(Object)
       );
 
       // Verify that the site is still added to sitesConfig

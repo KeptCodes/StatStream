@@ -12,6 +12,7 @@ import {
 } from "discord.js";
 import { channels, ids } from "../lib/constants";
 import { sitesConfig } from "../lib/sitesConfig";
+import logger from "../lib/logger";
 
 export async function handleModals(interaction: Interaction<CacheType>) {
   if (!interaction.isButton()) return;
@@ -217,9 +218,13 @@ export async function addSiteSubmission(interaction: Interaction<CacheType>) {
       await configChannel.send(
         `\`\`\`json\n${JSON.stringify(site, null, 2)}\n\`\`\``
       );
-      console.log(`Saved site configuration for: ${site.name}`);
+      logger.warn(`Saved site configuration for: ${site.name}`);
     } catch (error) {
-      console.error("Error saving site configuration:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "An unknown error occurred while handling modals";
+      logger.error("Error saving site configuration:", { error: errorMessage });
     }
   }
   await interaction.reply({
@@ -307,10 +312,14 @@ export async function deleteSiteSubmission(
     const channel = await guild.channels.fetch(site.channelID);
     if (channel) {
       await channel.delete();
-      console.log(`Deleted channel for site: ${site.name}`);
+      logger.warn(`Deleted channel for site: ${site.name}`);
     }
   } catch (error) {
-    console.error("Error deleting channel:", error);
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "An unknown error occurred while handling modals";
+    logger.error("Error deleting channel:", { error: errorMessage });
   }
 
   const configChannel = guild.channels.cache.find(
@@ -326,7 +335,7 @@ export async function deleteSiteSubmission(
 
     if (siteMessage) {
       await siteMessage.delete();
-      console.log(`Deleted site config for: ${site.name}`);
+      logger.warn(`Deleted site config for: ${site.name}`);
     }
   }
 

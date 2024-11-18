@@ -6,7 +6,6 @@ import {
   Collection,
   Guild,
   GuildBasedChannel,
-  GuildChannelManager,
   GuildMessageManager,
   Message,
   PermissionsBitField,
