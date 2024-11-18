@@ -5,7 +5,10 @@ on:
     branches:
       - master
       - dev
-
+  push:
+    branches:
+      - master
+      - dev
 jobs:
   test:
     runs-on: ubuntu-latest
