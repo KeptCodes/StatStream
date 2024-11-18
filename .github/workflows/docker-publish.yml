@@ -28,7 +28,7 @@ jobs:
       - name: Get version from Release workflow
         id: get_version
         run: |
-          VERSION=$(git describe --tags --abbrev=0)  # Assuming tags follow the release version
+          VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0")  # Assuming tags follow the release version
           echo "Version: $VERSION"
           echo "::set-output name=version::$VERSION"
 
