@@ -13,8 +13,7 @@
   "keywords": [],
   "release": {
     "branches": [
-      "master",
-      "dev"
+      "master"
     ],
     "plugins": [
       "@semantic-release/commit-analyzer",
