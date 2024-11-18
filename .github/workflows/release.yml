@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  workflow_run:
+    workflows:
+      - Test # The name of the Test workflow
+    types:
+      - completed
+
+jobs:
+  release:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18" # Adjust to your required Node version
+
+      - name: Install dependencies
+        run: npm install # or 'bun install' if you're using Bun
+
+      - name: Set version based on branch
+        id: version
+        run: |
+          if [ "${GITHUB_REF}" == "refs/heads/dev" ]; then
+            VERSION="canary-${GITHUB_SHA}"
+            echo "Versioning as Canary: $VERSION"
+          else
+            VERSION="v$(date +'%Y%m%d%H%M%S')"
+            echo "Versioning as Stable: $VERSION"
+          fi
+          echo "::set-output name=version::$VERSION"
+
+      - name: Run release
+        run: npm run release # or 'bun run release' if you're using Bun
+
+      - name: Push changes
+        run: git push --follow-tags # Push the new release and tags back to the repository
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          release_name: Release ${{ steps.version.outputs.version }}
+          body: |
+            Changelog:
+            ${{ steps.changelog.outputs.changelog }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
