@@ -18,8 +18,6 @@ type LocationData = {
   timezone?: string;
 };
 
-
-
 type AnalyticsEvent = {
   event: string;
   page: string;
@@ -28,7 +26,8 @@ type AnalyticsEvent = {
   timestamp: Date;
   device_info: string;
   location: LocationData;
-}
+  additionalData: Record<string, any>;
+};
 
 type AggregatedAnalytics = {
   totalEvents: number;
@@ -36,8 +35,8 @@ type AggregatedAnalytics = {
   pageViews: Record<string, number>;
   referrers: Record<string, number>;
   locations: Record<string, number>;
-}
+};
 
 type DashboardData = {
   [siteName: string]: AggregatedAnalytics;
-}
+};

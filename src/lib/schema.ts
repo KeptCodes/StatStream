@@ -1,5 +1,14 @@
 import { z } from "zod";
 
+export enum EventType {
+  PageView = "pageview",
+  Click = "click",
+  FormSubmission = "form_submission",
+  TimeOnPage = "time_on_page",
+  Leave = "leave",
+  Scroll = "scroll",
+}
+
 export const TrackedDataSchema = z.object({
   eventType: z.string(),
   page: z.string(),
@@ -12,4 +21,5 @@ export const TrackedDataSchema = z.object({
     platform: z.string(),
     userAgent: z.string(),
   }),
+  additionalData: z.any().optional(),
 });

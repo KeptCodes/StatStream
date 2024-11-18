@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import { TrackedDataSchema } from "../lib/schema";
-import { fetchLocationData } from "../lib/utils";
+import { fetchLocationData, minify } from "../lib/utils";
 import { sitesConfig } from "../lib/sitesConfig";
 import client from "../lib/discord";
 import { ChannelType, TextChannel } from "discord.js";
 import logger from "../lib/logger";
+import { getDeviceInfo, getSessionId } from "../scripts/utilities";
+import { sendAnalyticsFn, trackUserBehavior } from "../scripts/core";
 
 export const trackAction = async (
   req: Request,
@@ -12,7 +14,6 @@ export const trackAction = async (
 ): Promise<void> => {
   try {
     const { success, data, error } = TrackedDataSchema.safeParse(req.body);
-
     if (!success || !data) {
       const formattedErrors = error.errors.map((err) => ({
         path: err.path.join("."), // Dot notation path
@@ -25,8 +26,6 @@ export const trackAction = async (
       });
       return;
     }
-
-    logger.info("Validation successful", { data });
 
     const locationData = await fetchLocationData(req);
     logger.debug("Fetched location data", { locationData });
@@ -47,6 +46,7 @@ export const trackAction = async (
       session_id: data.sessionId,
       device_info: `${data.deviceInfo.platform}, ${data.deviceInfo.language}, ${data.deviceInfo.userAgent}`,
       location: locationData,
+      additionalData: data.additionalData,
     };
 
     const channel = (await client.channels.fetch(
@@ -162,5 +162,36 @@ export const sendAnalytics = async (
       error instanceof Error ? error.message : "An unknown error occurred";
     logger.error("Failed to fetch analytics data", { error: errorMessage });
     res.status(500).json({ error: "Failed to fetch analytics data" });
+  }
+};
+
+export const trackingScript = async (req: Request, res: Response) => {
+  const trackingUrl = `${req.protocol}://${req.get("host")}/track`;
+  let script = `
+    (function () {
+      ${getSessionId}
+      ${getDeviceInfo}
+      const sessionId = getSessionId();
+      ${sendAnalyticsFn(trackingUrl)}
+`;
+
+  // TODO! ADD FEATURES
+  script += trackUserBehavior;
+
+  script += `
+      sendAnalytics("pageview");
+      window.addEventListener("beforeunload", () => {
+        sendAnalytics("leave");
+      });
+    })();
+  `;
+
+  try {
+    const minified = await minify(script);
+    res.type("application/javascript").send(minified.code);
+  } catch (error) {
+    logger.error("Minification error:", error);
+    console.error("Minification error:", error);
+    res.status(500).send("Error generating the script");
   }
 };

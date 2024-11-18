@@ -1,7 +1,7 @@
 import { ChannelType } from "discord.js";
 import request from "supertest";
 import { sitesConfig } from "../src/lib/sitesConfig";
-import { fetchLocationData } from "../src/lib/utils";
+import { fetchLocationData, minify } from "../src/lib/utils";
 import client from "../src/lib/discord";
 import server from "../src/lib/server";
 
@@ -21,6 +21,7 @@ jest.mock("../src/lib/discord", () => ({
 // Mocking location fetching
 jest.mock("../src/lib/utils", () => ({
   fetchLocationData: jest.fn(),
+  minify: jest.fn(),
 }));
 
 describe("API Handlers Tests", () => {
@@ -148,7 +149,7 @@ describe("API Handlers Tests", () => {
     it("should skip channel if not found", async () => {
       (client.channels.fetch as jest.Mock).mockResolvedValue(null); // Simulating channel not found
 
-      const response = await request(server).get("/analytics");
+      const response = await request(server).get("/api/analytics");
 
       expect(response.status).toBe(200); // Still success because it skips the channel
       expect(response.body).toEqual({});
@@ -164,14 +165,14 @@ describe("API Handlers Tests", () => {
 
       (client.channels.fetch as jest.Mock).mockResolvedValue(mockChannel);
 
-      const response = await request(server).get("/analytics");
+      const response = await request(server).get("/api/analytics");
 
       expect(response.status).toBe(200); // No data for this channel, still success
       expect(response.body).toEqual({});
     });
 
     it("should return analytics data successfully", async () => {
-      const response = await request(server).get("/analytics");
+      const response = await request(server).get("/api/analytics");
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty(sitesConfig[0].name);
@@ -196,7 +197,7 @@ describe("API Handlers Tests", () => {
 
       (client.channels.fetch as jest.Mock).mockResolvedValue(mockChannel);
 
-      const response = await request(server).get("/analytics");
+      const response = await request(server).get("/api/analytics");
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty(sitesConfig[0].name);
@@ -209,10 +210,39 @@ describe("API Handlers Tests", () => {
         new Error("Discord API Error")
       );
 
-      const response = await request(server).get("/analytics");
+      const response = await request(server).get("/api/analytics");
 
       expect(response.status).toBe(500);
       expect(response.body.error).toBe("Failed to fetch analytics data");
+    });
+  });
+
+  describe("trackingScript Handler", () => {
+    beforeEach(() => {
+      (minify as jest.Mock).mockResolvedValue({ code: "minifiedScript" });
+    });
+
+    it("should return minified tracking script with correct content type", async () => {
+      const res = await request(server).get("/scripts/tracker");
+
+      // Check if the response is of type JavaScript
+      expect(res.type).toBe("application/javascript");
+      console.log(res.text);
+      // Check that the response contains minified script (minify function should work)
+      expect(res.text).toBe("minifiedScript");
+    });
+
+    it("should return a 500 error if script minification fails", async () => {
+      // Mock minification to fail
+      (minify as jest.Mock).mockRejectedValueOnce(
+        new Error("Minification error")
+      );
+
+      const res = await request(server).get("/scripts/tracker");
+
+      // Ensure 500 error is returned
+      expect(res.status).toBe(500);
+      expect(res.text).toBe("Error generating the script");
     });
   });
 });
