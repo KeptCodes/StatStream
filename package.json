@@ -38,7 +38,10 @@
     "tagFormat": "v${version}"
   },
   "author": "Priyanshu Verma",
-  "license": "ISC",
+  "repository": {
+    "url": "https://github.com/KeptCodes/StatStream"
+  },
+  "license": "MPL-2.0",
   "description": "",
   "dependencies": {
     "axios": "^1.7.7",
