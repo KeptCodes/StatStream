@@ -11,8 +11,37 @@
     "lint": "eslint . --ignore-pattern 'coverage/**/*'"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "release": {
+    "branches": [
+      "master",
+      "dev"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/changelog",
+        {
+          "changelogFile": "CHANGELOG.md"
+        }
+      ],
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "CHANGELOG.md"
+          ]
+        }
+      ],
+      "@semantic-release/github"
+    ],
+    "tagFormat": "v${version}"
+  },
+  "author": "Priyanshu Verma",
+  "repository": {
+    "url": "https://github.com/KeptCodes/StatStream"
+  },
+  "license": "MPL-2.0",
   "description": "",
   "dependencies": {
     "axios": "^1.7.7",
