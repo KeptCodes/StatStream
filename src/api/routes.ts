@@ -1,13 +1,11 @@
-import { Router } from 'express'
-import { sendAnalytics, trackAction } from './handlers';
+import { Router } from "express";
+import { sendAnalytics, trackAction, trackingScript } from "./handlers";
 
+const router = Router();
 
-const router = Router()
+router.post("/track", trackAction);
+router.get("/api/analytics", sendAnalytics);
 
-
-
-router.post("/track", trackAction)
-router.get("/analytics", sendAnalytics)
-
+router.get("/scripts/tracker", trackingScript);
 
 export default router;
