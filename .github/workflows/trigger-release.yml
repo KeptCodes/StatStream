@@ -17,7 +17,8 @@ jobs:
       - name: Check for `@release` Label
         id: label_check
         run: |
-          RELEASE_LABEL_PRESENT=$(echo "${{ toJson(github.event.pull_request.labels) }}" | jq '.[] | select(.name == "@release")' | wc -l)
+          echo '${{ toJson(github.event.pull_request.labels) }}' > labels.json
+          RELEASE_LABEL_PRESENT=$(jq '.[] | select(.name == "@release")' labels.json | wc -l)
           echo "Release label presence: $RELEASE_LABEL_PRESENT"
           if [ "$RELEASE_LABEL_PRESENT" -eq "0" ]; then
             echo "No release label found."
