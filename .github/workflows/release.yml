@@ -12,7 +12,6 @@ permissions:
 
 jobs:
   release:
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.outputs.triggered_by_release == 'true' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write # Write access to create releases and tags
@@ -21,6 +20,12 @@ jobs:
       issues: write
 
     steps:
+      - name: Debug Workflow Run Outputs
+        run: |
+          echo "Workflow run conclusion: ${{ github.event.workflow_run.conclusion }}"
+          echo "Triggered by release: ${{ github.event.workflow_run.outputs.triggered_by_release }}"
+          echo "Full workflow run event: ${{ toJson(github.event) }}"
+          exit 1
       - name: "Generate token"
         id: generate_token
         uses: tibdex/github-app-token@v1
