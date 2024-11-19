@@ -49,9 +49,6 @@ jobs:
             github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              workflow_id: 'test.yml',
+              workflow_id: 'release.yml',
               ref: 'dev',
-              inputs: {
-                triggered_by_release: 'true'
-              }
             });
