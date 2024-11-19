@@ -11,10 +11,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check for `release` Label
+      - name: Install jq
+        run: sudo apt-get install jq -y
+
+      - name: Check for `@release` Label
         id: label_check
         run: |
-          RELEASE_LABEL_PRESENT=$(echo "${{ toJson(github.event.pull_request.labels) }}" | grep -c '"name": "@release"')
+          RELEASE_LABEL_PRESENT=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq '.[] | select(.name == "@release")' | wc -l)
           echo "Release label presence: $RELEASE_LABEL_PRESENT"
           if [ "$RELEASE_LABEL_PRESENT" -eq "0" ]; then
             echo "No release label found."
