@@ -52,6 +52,6 @@ jobs:
               workflow_id: 'test.yml',
               ref: 'dev',
               inputs: {
-                triggered_by_release: true
+                triggered_by_release: 'true'
               }
             });
