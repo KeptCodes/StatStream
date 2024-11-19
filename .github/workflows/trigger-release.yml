@@ -1,36 +1,46 @@
 name: Trigger Release Cycle
 
 on:
-  pull_request:
-    types:
-      - closed # Detect when a pull request is merged
-
-permissions:
-  contents: read
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
 
 jobs:
   trigger:
-    if: ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      id-token: write
 
     steps:
       - name: Install jq
         run: sudo apt-get install jq -y
 
+      - name: Get the last merged PR info
+        id: pr_info
+        run: |
+          # Get the last PR merged into this branch
+          PR_NUMBER=$(curl -s "https://api.github.com/repos/${{ github.repository }}/pulls?state=closed&direction=desc" | jq -r '.[0].number')
+          if [[ -z "$PR_NUMBER" ]]; then
+            echo "Error: Unable to find the last merged PR."
+            exit 1
+          fi
+          echo "Last PR merged: #$PR_NUMBER"
+
+          # Get PR labels
+          PR_LABELS=$(curl -s "https://api.github.com/repos/${{ github.repository }}/issues/$PR_NUMBER/labels" | jq -r '.[].name')
+          echo "PR Labels: $PR_LABELS"
+          echo "PR_LABELS=$PR_LABELS" >> $GITHUB_ENV
+
       - name: Check for `@release` Label
         id: label_check
         run: |
-          echo '${{ toJson(github.event.pull_request.labels) }}' > labels.json
-          RELEASE_LABEL_PRESENT=$(jq '.[] | select(.name == "@release")' labels.json | wc -l)
-          echo "Release label presence: $RELEASE_LABEL_PRESENT"
-          if [ "$RELEASE_LABEL_PRESENT" -eq "0" ]; then
-            echo "No release label found."
+          if [[ "${{ steps.pr_info.outputs.pr_labels }}" == *"@release"* ]]; then
+            echo "Release label found!"
+          else
+            echo "No release label found. Exiting."
             exit 1
           fi
       - name: Trigger Test Workflow
+        if: success()
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
