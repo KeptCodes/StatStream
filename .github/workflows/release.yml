@@ -12,11 +12,13 @@ permissions:
 
 jobs:
   release:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.outputs.triggered_by_release == 'true' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write # Write access to create releases and tags
       id-token: write # Necessary for generating the ID token for authentication
+      pull-requests: write
+      issues: write
 
     steps:
       - name: "Generate token"

@@ -1,0 +1,36 @@
+name: Trigger Release Cycle
+
+on:
+  pull_request:
+    types:
+      - closed # Detect when a pull request is merged
+
+jobs:
+  trigger:
+    if: ${{ github.event.pull_request.merged == true }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check for `release` Label
+        id: label_check
+        run: |
+          RELEASE_LABEL_PRESENT=$(echo "${{ toJson(github.event.pull_request.labels) }}" | grep -c '"name": "@release"')
+          echo "Release label presence: $RELEASE_LABEL_PRESENT"
+          if [ "$RELEASE_LABEL_PRESENT" -eq "0" ]; then
+            echo "No release label found."
+            exit 1
+          fi
+
+      - name: Trigger Test Workflow
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'test.yml',
+              ref: 'dev',
+              inputs: {
+                triggered_by_release: true
+              }
+            });

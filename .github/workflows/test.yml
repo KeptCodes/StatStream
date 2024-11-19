@@ -1,13 +1,16 @@
 name: Test
 
 on:
+  workflow_dispatch:
+    inputs:
+      triggered_by_release:
+        type: boolean
+        default: false
   pull_request:
     branches:
-      - master
       - dev
   push:
     branches:
-      - master
       - dev
   merge_group:
     types: [synchronize, closed, checks_requested] # Trigger when pull request is synchronized or closed
@@ -15,6 +18,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    outputs:
+      triggered_by_release: ${{ steps.set_release_flag.outputs.triggered_by_release }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -33,3 +38,9 @@ jobs:
 
       - name: Run tests
         run: bun run test
+
+      - name: Set Release Flag
+        id: set_release_flag
+        run: |
+          echo "triggered_by_release=${{ github.event.inputs.triggered_by_release }}" >> $GITHUB_ENV
+          echo "::set-output name=triggered_by_release::${{ github.event.inputs.triggered_by_release }}"

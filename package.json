@@ -2,6 +2,7 @@
   "name": "statstream",
   "version": "1.0.0",
   "main": "build/main.js",
+  "private": "true",
   "scripts": {
     "build": "tsc",
     "start": "node build/main.js",
@@ -13,7 +14,7 @@
   "keywords": [],
   "release": {
     "branches": [
-      "master"
+      "dev"
     ],
     "plugins": [
       "@semantic-release/commit-analyzer",
@@ -24,16 +25,22 @@
           "changelogFile": "CHANGELOG.md"
         }
       ],
+      "@semantic-release/github",
+      [
+        "@semantic-release/npm",
+        {
+          "npmPublish": false
+        }
+      ],
       [
         "@semantic-release/git",
         {
           "assets": [
-            "CHANGELOG.md",
-            "package.json"
+            "package.json",
+            "CHANGELOG.md"
           ]
         }
-      ],
-      "@semantic-release/github"
+      ]
     ],
     "tagFormat": "v${version}"
   },
