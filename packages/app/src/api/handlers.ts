@@ -168,7 +168,7 @@ export const sendAnalytics = async (
 };
 
 export const trackingScript = async (req: Request, res: Response) => {
-  const trackingUrl = `${req.protocol}://${req.get("host")}/track`;
+  const trackingUrl = `https://${req.get("host")}/track`;
   let script = `
     (function () {
       ${getSessionId}
