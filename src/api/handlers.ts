@@ -27,10 +27,12 @@ export const trackAction = async (
       return;
     }
 
+    const originUrl = req.headers.origin;
+
     const locationData = await fetchLocationData(req);
     logger.debug("Fetched location data", { locationData });
 
-    const site = sitesConfig.find((site) => site.url === data.url);
+    const site = sitesConfig.find((site) => site.url === originUrl);
     if (!site) {
       logger.warn(`Site not found for URL: ${data.url}`);
       res.status(400).send("Site not found");
