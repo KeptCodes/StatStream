@@ -8,7 +8,7 @@ on:
       - dev
 
   merge_group:
-    types: [synchronize, closed, checks_requested] # Trigger when pull request is synchronized or closed
+    types: [checks_requested] # Trigger when pull request is synchronized or closed
 
 jobs:
   lint:
@@ -30,7 +30,8 @@ jobs:
 
       - name: Load environment variables from .env file
         run: |
+          cd ./packages/app
           cp .env.example .env
 
       - name: Run tests
-        run: bun run test
+        run: bun run test:app

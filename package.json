@@ -1,84 +1,18 @@
 {
-  "name": "statstream",
-  "version": "1.0.2",
-  "main": "build/main.js",
-  "private": "true",
+  "name": "statstream-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/app",
+    "packages/docs"
+  ],
   "scripts": {
-    "build": "tsc",
-    "start": "node build/main.js",
-    "dev": "ts-node-dev --respawn --transpile-only src/main.ts",
-    "test": "jest",
-    "release": "semantic-release",
-    "lint": "eslint . --ignore-pattern 'coverage/**/*'"
-  },
-  "keywords": [],
-  "release": {
-    "branches": [
-      "dev"
-    ],
-    "plugins": [
-      "@semantic-release/commit-analyzer",
-      "@semantic-release/release-notes-generator",
-      [
-        "@semantic-release/changelog",
-        {
-          "changelogFile": "CHANGELOG.md"
-        }
-      ],
-      "@semantic-release/github",
-      [
-        "@semantic-release/npm",
-        {
-          "npmPublish": false
-        }
-      ],
-      [
-        "@semantic-release/git",
-        {
-          "assets": [
-            "package.json",
-            "CHANGELOG.md"
-          ]
-        }
-      ]
-    ],
-    "tagFormat": "v${version}"
-  },
-  "author": "Priyanshu Verma",
-  "repository": {
-    "url": "https://github.com/KeptCodes/StatStream"
-  },
-  "license": "MPL-2.0",
-  "description": "",
-  "dependencies": {
-    "axios": "^1.7.7",
-    "cors": "^2.8.5",
-    "discord.js": "^14.16.3",
-    "dotenv": "^16.4.5",
-    "express": "^4.21.1",
-    "terser": "^5.36.0",
-    "winston": "^3.17.0",
-    "zod": "^3.23.8"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.15.0",
-    "@jest/globals": "^29.7.0",
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^11.0.1",
-    "@types/bun": "latest",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.0",
-    "@types/jest": "^29.5.14",
-    "@types/supertest": "^6.0.2",
-    "eslint": "^9.15.0",
-    "globals": "^15.12.0",
-    "jest": "^29.7.0",
-    "semantic-release": "^24.2.0",
-    "supertest": "^7.0.0",
-    "ts-jest": "^29.2.5",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.6.3",
-    "typescript-eslint": "^8.14.0"
+    "dev:app": "bun run --cwd packages/app dev",
+    "build:app": "bun run --cwd packages/app build",
+    "test:app": "bun run --cwd packages/app test",
+    "lint:app": "bun run --cwd packages/app lint",
+    "release:app": "bun run --cwd packages/app release",
+    "release:docs": "bun run --cwd packages/docs deploy",
+    "dev:docs": "bun run --cwd packages/docs start",
+    "build:docs": "bun run --cwd packages/docs build"
   }
 }

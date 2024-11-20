@@ -3,7 +3,7 @@ FROM oven/bun:alpine AS base
 WORKDIR /usr/src/app
 
 # Copy package files early to leverage caching
-COPY package.json bun.lockb ./
+COPY package.json  ./
 
 # Install dependencies
 RUN bun install --frozen-lockfile
