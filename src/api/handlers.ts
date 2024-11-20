@@ -26,7 +26,7 @@ export const trackAction = async (
       });
       return;
     }
-
+    console.log(req.headers["x-signature"]);
     const originUrl = req.headers.origin;
 
     const locationData = await fetchLocationData(req);
@@ -193,7 +193,6 @@ export const trackingScript = async (req: Request, res: Response) => {
     res.type("application/javascript").send(minified.code);
   } catch (error) {
     logger.error("Minification error:", error);
-    console.error("Minification error:", error);
     res.status(500).send("Error generating the script");
   }
 };

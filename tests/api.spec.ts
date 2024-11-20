@@ -66,7 +66,10 @@ describe("API Handlers Tests", () => {
     });
 
     it("should track event successfully", async () => {
-      const response = await request(server).post("/track").send(mockValidData);
+      const response = await request(server)
+        .post("/track")
+        .set("Origin", sitesConfig[0].url)
+        .send(mockValidData);
 
       expect(response.status).toBe(200);
       expect(response.text).toBe("Event tracked successfully");
@@ -81,7 +84,10 @@ describe("API Handlers Tests", () => {
         eventType: undefined,
       };
 
-      const response = await request(server).post("/track").send(invalidData);
+      const response = await request(server)
+        .post("/track")
+        .set("Origin", sitesConfig[0].url)
+        .send(invalidData);
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe("Validation failed");
@@ -96,6 +102,7 @@ describe("API Handlers Tests", () => {
 
       const response = await request(server)
         .post("/track")
+        .set("Origin", unknownSiteData.url)
         .send(unknownSiteData);
 
       expect(response.status).toBe(400);
@@ -106,7 +113,10 @@ describe("API Handlers Tests", () => {
       const mockErrorChannel = new Error("Channel not found");
       (client.channels.fetch as jest.Mock).mockRejectedValue(mockErrorChannel);
 
-      const response = await request(server).post("/track").send(mockValidData);
+      const response = await request(server)
+        .post("/track")
+        .set("Origin", sitesConfig[0].url)
+        .send(mockValidData);
 
       expect(response.status).toBe(500);
       expect(response.text).toBe("Error tracking event");
@@ -114,7 +124,10 @@ describe("API Handlers Tests", () => {
     it("should return 500 and 'Channel not found' when the channel does not exist", async () => {
       (client.channels.fetch as jest.Mock).mockResolvedValue(null);
 
-      const response = await request(server).post("/track").send(mockValidData);
+      const response = await request(server)
+        .post("/track")
+        .set("Origin", sitesConfig[0].url)
+        .send(mockValidData);
 
       expect(response.status).toBe(500);
       expect(response.text).toBe("Channel not found");
@@ -238,7 +251,9 @@ describe("API Handlers Tests", () => {
         new Error("Minification error")
       );
 
-      const res = await request(server).get("/scripts/tracker");
+      const res = await request(server)
+        .get("/scripts/tracker")
+        .set("Origin", sitesConfig[0].url);
 
       // Ensure 500 error is returned
       expect(res.status).toBe(500);
