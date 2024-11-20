@@ -32,20 +32,20 @@ jobs:
           fetch-depth: 0
           token: ${{ steps.generate_token.outputs.token }}
 
-      - name: Set up Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          bun-version: latest
+          node-version: 20
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: npm install 
 
       - name: Set up GitHub Token
         run: |
           echo "GITHUB_TOKEN=${{ steps.generate_token.outputs.token }}" >> $GITHUB_ENV
 
       - name: Run release
-        run: bun run release:app
+        run: cd ./packages/app && npm run release
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }} # Pass token for authentication
 
