@@ -1,12 +1,7 @@
 name: Lint Codebase
 
 on:
-  merge_group:
-    types: [synchronize, closed, checks_requested]
-
-  pull_request:
-    branches:
-      - dev
+  workflow_call:
 
 jobs:
   lint:

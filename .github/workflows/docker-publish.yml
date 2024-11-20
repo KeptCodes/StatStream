@@ -1,15 +1,15 @@
 name: Build and Publish Docker Image
 
 on:
-  workflow_run:
-    workflows:
-      - Release
-    types:
-      - completed
+  workflow_dispatch:
+  release:
+    types: [released]
 
 jobs:
+  tests:
+    uses: ./.github/workflows/test.yml
   build-and-publish:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    needs: [tests]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
