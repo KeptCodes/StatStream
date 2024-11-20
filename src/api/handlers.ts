@@ -26,11 +26,13 @@ export const trackAction = async (
       });
       return;
     }
+    console.log(req.headers["x-signature"]);
+    const originUrl = req.headers.origin;
 
     const locationData = await fetchLocationData(req);
     logger.debug("Fetched location data", { locationData });
 
-    const site = sitesConfig.find((site) => site.url === data.url);
+    const site = sitesConfig.find((site) => site.url === originUrl);
     if (!site) {
       logger.warn(`Site not found for URL: ${data.url}`);
       res.status(400).send("Site not found");
@@ -191,7 +193,6 @@ export const trackingScript = async (req: Request, res: Response) => {
     res.type("application/javascript").send(minified.code);
   } catch (error) {
     logger.error("Minification error:", error);
-    console.error("Minification error:", error);
     res.status(500).send("Error generating the script");
   }
 };
