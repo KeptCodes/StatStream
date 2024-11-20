@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/KeptCodes/StatStream/compare/v1.0.1...v1.0.2) (2024-11-20)
+
+
+### Bug Fixes
+
+* origin URL matching ([#32](https://github.com/KeptCodes/StatStream/issues/32)) ([b1ff38d](https://github.com/KeptCodes/StatStream/commit/b1ff38d5cf6ed95a8f2314ddf4a6de7144ee6dda))
+
 # 1.0.0 (2024-11-19)
 
 

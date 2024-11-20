@@ -1,6 +1,6 @@
 {
   "name": "statstream",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "main": "build/main.js",
   "private": "true",
   "scripts": {
