@@ -45,7 +45,7 @@ jobs:
           echo "GITHUB_TOKEN=${{ steps.generate_token.outputs.token }}" >> $GITHUB_ENV
 
       - name: Run release
-        run: npm run release
+        run: npm run release:app
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }} # Pass token for authentication
 
