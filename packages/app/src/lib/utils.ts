@@ -3,17 +3,7 @@ import { Request } from "express";
 import terser from "terser";
 
 export async function fetchLocationData(req: Request) {
-  let clientIP: string;
-
-  if (req.headers["x-forwarded-for"]) {
-    if (typeof req.headers["x-forwarded-for"] === "string") {
-      clientIP = req.headers["x-forwarded-for"];
-    } else {
-      clientIP = req.headers["x-forwarded-for"][0].trim();
-    }
-  } else {
-    clientIP = req.socket.remoteAddress ?? "";
-  }
+  const clientIP = req.socket.remoteAddress ?? "";
 
   let locationData: LocationData;
 

@@ -26,7 +26,6 @@ export const trackAction = async (
       });
       return;
     }
-    console.log(req.headers["x-signature"]);
     const originUrl = req.headers.origin;
 
     const locationData = await fetchLocationData(req);
