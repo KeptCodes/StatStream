@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/KeptCodes/StatStream/compare/v1.1.0...v1.1.1) (2024-11-22)
+
+
+### Bug Fixes
+
+* og banner added ([#40](https://github.com/KeptCodes/StatStream/issues/40)) ([c9512a2](https://github.com/KeptCodes/StatStream/commit/c9512a2c8970836498cb217da53bb01693380913))
+
 # [1.1.0](https://github.com/KeptCodes/StatStream/compare/v1.0.2...v1.1.0) (2024-11-20)
 
 
