@@ -3,9 +3,7 @@ import { Request } from "express";
 import terser from "terser";
 
 export async function fetchLocationData(req: Request) {
-  let clientIP: string;
-
-  clientIP = req.socket.remoteAddress ?? "";
+  const clientIP = req.socket.remoteAddress ?? "";
 
   let locationData: LocationData;
 

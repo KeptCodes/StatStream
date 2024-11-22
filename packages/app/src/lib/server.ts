@@ -7,7 +7,7 @@ const server = express();
 server.use(cors());
 server.use(express.json());
 server.use(router);
-server.use((req, res, next) => {
+server.use((_, res) => {
   res.send("NOT FOUND");
 });
 
