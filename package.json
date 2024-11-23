@@ -3,7 +3,8 @@
   "private": true,
   "workspaces": [
     "packages/app",
-    "packages/docs"
+    "packages/docs",
+    "packages/studio"
   ],
   "scripts": {
     "dev:app": "bun run --cwd packages/app dev",
@@ -13,6 +14,9 @@
     "release:app": "bun run --cwd packages/app release",
     "release:docs": "bun run --cwd packages/docs deploy",
     "dev:docs": "bun run --cwd packages/docs start",
-    "build:docs": "bun run --cwd packages/docs build"
+    "build:docs": "bun run --cwd packages/docs build",
+    "docs": "bun run --cwd packages/docs",
+    "app": "bun run --cwd packages/app",
+    "studio": "bun run --cwd packages/studio"
   }
 }
