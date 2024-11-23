@@ -1,0 +1,14 @@
+ci:
+  - .github/**/*
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file: /packages/docs/*
+
+app:
+  - changed-files:
+      - any-glob-to-any-file: /packages/app/*
+
+studio:
+  - changed-files:
+      - any-glob-to-any-file: /packages/studio/*
