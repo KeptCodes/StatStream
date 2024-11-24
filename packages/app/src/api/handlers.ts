@@ -195,3 +195,81 @@ export const trackingScript = async (req: Request, res: Response) => {
     res.status(500).send("Error generating the script");
   }
 };
+
+export const sendSites = async (_: Request, res: Response): Promise<void> => {
+  try {
+    const data = sitesConfig.map((site) => {
+      return {
+        id: site.channelID,
+        name: site.name,
+        description: site.description,
+        url: site.url,
+      };
+    });
+
+    res.status(200).json(data);
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred";
+    logger.error("Failed to fetch sites data", { error: errorMessage });
+    res.status(500).json({ error: "Failed to fetch sites data" });
+  }
+};
+
+export const sendSite = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { channelId } = req.params;
+    const { limit, after } = req.query;
+
+    const site = sitesConfig.find((s) => s.channelID === channelId);
+
+    if (!site) {
+      res.status(404).json({
+        message: "Site not found. Check Id",
+      });
+      return;
+    }
+    const channel = await client.channels.fetch(site.channelID);
+    if (!channel) {
+      logger.warn("Channel not found", { channelID: site.channelID });
+      return;
+    }
+    if (channel.type !== ChannelType.GuildText) {
+      logger.warn("Channel is not a text channel", {
+        channelID: site.channelID,
+      });
+      return;
+    }
+    const messages = await (channel as TextChannel).messages.fetch({
+      limit: limit ? parseInt(limit as string) : 50,
+      after: after as string,
+    });
+    const siteData: AnalyticsEvent[] = [];
+    messages
+      .sort((a, b) => a.createdTimestamp - b.createdTimestamp)
+      .forEach((message) => {
+        try {
+          const jsonData = JSON.parse(
+            message.content.replace(/```json|```/g, "").trim()
+          );
+          siteData.push({ id: message.id, ...jsonData });
+        } catch (error) {
+          const parseErrorMessage =
+            error instanceof Error
+              ? error.message
+              : "An unknown error occurred while parsing message";
+          logger.debug("Failed to parse message as JSON", {
+            messageID: message.id,
+            error: parseErrorMessage,
+          });
+        }
+      });
+
+    res.status(200).json(siteData);
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred";
+    logger.error("Failed to fetch site data", { error: errorMessage });
+    res.status(500).json({ error: "Failed to fetch site data" });
+  }
+};
