@@ -412,13 +412,13 @@ function aggregateDashboardData(events: AnalyticsEvent[]) {
   };
 
   // Overview data
-  let totalPageViews = { desktop: 0, mobile: 0 };
-  let uniqueVisitorsSet = {
+  const totalPageViews = { desktop: 0, mobile: 0 };
+  const uniqueVisitorsSet = {
     desktop: new Set<string>(),
     mobile: new Set<string>(),
   };
-  let sessionDurations = { desktop: [] as number[], mobile: [] as number[] };
-  let bounces = { desktop: 0, mobile: 0 };
+  const sessionDurations = { desktop: [] as number[], mobile: [] as number[] };
+  const bounces = { desktop: 0, mobile: 0 };
 
   // Monthly data
   const monthlyDataMap: Record<string, { desktop: number; mobile: number }> =
