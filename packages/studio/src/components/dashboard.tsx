@@ -35,8 +35,7 @@ const Dashboard: React.FC = () => {
           Analytics Dashboard
         </h2>
         <div className="flex items-center space-x-2">
-          <CalendarDateRangePicker />
-          <Button>Download</Button>
+          <Button>Global Data</Button>
         </div>
       </div>
 
