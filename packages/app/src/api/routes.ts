@@ -5,6 +5,7 @@ import {
   trackingScript,
   sendSites,
   sendSite,
+  sendDashboardData,
 } from "./handlers";
 
 const router = Router();
@@ -15,6 +16,7 @@ router.get("/scripts/tracker", trackingScript);
 
 // STUDIO APIs
 apiRoutes.get("/analytics", sendAnalytics);
+apiRoutes.get("/dashboard", sendDashboardData);
 apiRoutes.get("/sites", sendSites);
 apiRoutes.get("/site/:channelId", sendSite);
 
