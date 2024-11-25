@@ -2,8 +2,7 @@ name: "PR Labeler"
 
 on:
   pull_request_target:
-  pull_request:
-    types: [opened, synchronize, reopened]
+    types: [synchronize, opened, reopened]
 
 jobs:
   label:
