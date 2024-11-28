@@ -5,6 +5,9 @@ import { fetchLocationData, minify } from "../src/lib/utils";
 import client from "../src/lib/discord";
 import server from "../src/lib/server";
 
+const authheaders = {
+  "x-studio-key": "studio-api-key",
+};
 // Mocking Discord client
 jest.mock("../src/lib/discord", () => ({
   __esModule: true,
@@ -162,7 +165,9 @@ describe("API Handlers Tests", () => {
     it("should skip channel if not found", async () => {
       (client.channels.fetch as jest.Mock).mockResolvedValue(null); // Simulating channel not found
 
-      const response = await request(server).get("/api/analytics");
+      const response = await request(server)
+        .get("/api/analytics")
+        .set(authheaders);
 
       expect(response.status).toBe(200); // Still success because it skips the channel
       expect(response.body).toEqual({});
@@ -178,14 +183,18 @@ describe("API Handlers Tests", () => {
 
       (client.channels.fetch as jest.Mock).mockResolvedValue(mockChannel);
 
-      const response = await request(server).get("/api/analytics");
+      const response = await request(server)
+        .get("/api/analytics")
+        .set(authheaders);
 
       expect(response.status).toBe(200); // No data for this channel, still success
       expect(response.body).toEqual({});
     });
 
     it("should return analytics data successfully", async () => {
-      const response = await request(server).get("/api/analytics");
+      const response = await request(server)
+        .get("/api/analytics")
+        .set(authheaders);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty(sitesConfig[0].name);
@@ -210,7 +219,9 @@ describe("API Handlers Tests", () => {
 
       (client.channels.fetch as jest.Mock).mockResolvedValue(mockChannel);
 
-      const response = await request(server).get("/api/analytics");
+      const response = await request(server)
+        .get("/api/analytics")
+        .set(authheaders);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty(sitesConfig[0].name);
@@ -223,7 +234,9 @@ describe("API Handlers Tests", () => {
         new Error("Discord API Error")
       );
 
-      const response = await request(server).get("/api/analytics");
+      const response = await request(server)
+        .get("/api/analytics")
+        .set(authheaders);
 
       expect(response.status).toBe(500);
       expect(response.body.error).toBe("Failed to fetch analytics data");

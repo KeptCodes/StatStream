@@ -23,7 +23,7 @@ type AnalyticsEvent = {
   page: string;
   referrer: string;
   session_id: string;
-  timestamp: Date;
+  timestamp: string;
   device_info: string;
   location: LocationData;
   additionalData: Record<string, any>;

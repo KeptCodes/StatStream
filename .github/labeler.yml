@@ -4,12 +4,12 @@ ci:
 
 docs:
   - changed-files:
-      - any-glob-to-any-file: /packages/docs/*
+      - any-glob-to-any-file: packages/docs/*
 
 app:
   - changed-files:
-      - any-glob-to-any-file: /packages/app/*
+      - any-glob-to-any-file: packages/app/*
 
 studio:
   - changed-files:
-      - any-glob-to-any-file: /packages/studio/*
+      - any-glob-to-any-file: packages/studio/*
