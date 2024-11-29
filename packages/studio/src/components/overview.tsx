@@ -9,7 +9,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { MonthlyData } from "@/hooks/useAnalyticsData";
 
 const chartConfig = {
   desktop: {

@@ -6,7 +6,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { TopPage } from "@/hooks/useAnalyticsData";
 
 export function TopPages({ data }: { data: TopPage[] }) {
   return (

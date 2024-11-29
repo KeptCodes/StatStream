@@ -1,5 +1,3 @@
-import { RecentEvent } from "@/hooks/useAnalyticsData";
-
 export function RecentEvents({ events }: { events: RecentEvent[] }) {
   return (
     <div className="space-y-8">

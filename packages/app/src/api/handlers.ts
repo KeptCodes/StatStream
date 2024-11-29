@@ -280,7 +280,7 @@ export const sendDashboardData = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { id } = req.query;
+    const id = req.query.site;
     const siteData: AnalyticsEvent[] = [];
 
     if (id) {
@@ -511,7 +511,7 @@ function aggregateDashboardData(events: AnalyticsEvent[]) {
       })();
 
       recentEvents.push({
-        name: "Anonymous User", // Replace with user name if available
+        name: event.session_id, // Replace with user name if available
         action: `Performed event: ${event.event}`,
         timeAgo: timeAgoText,
       });

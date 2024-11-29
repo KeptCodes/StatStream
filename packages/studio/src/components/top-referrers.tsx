@@ -6,7 +6,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { TopReferrer } from "@/hooks/useAnalyticsData";
 
 export function TopReferrers({ data }: { data: TopReferrer[] }) {
   return (
