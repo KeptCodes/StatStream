@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import { ThemeProvider } from "@/providers/theme-provider";
 import "./globals.css";
 import QueryProvider from "@/providers/query";
+import StudioAuthBanner from "@/components/studio-auth-banner";
+import Modals from "@/providers/modals";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -40,7 +42,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <StudioAuthBanner />
             {children}
+            <Modals />
           </ThemeProvider>
         </QueryProvider>
       </body>

@@ -4,13 +4,14 @@ import { SERVER_URL } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 
 export default function useSites() {
+  const token = localStorage.getItem("studio_key");
   const { data, error, isLoading, status, refetch } = useQuery({
+    enabled: token != null,
     queryKey: ["sites_data"],
     queryFn: async () => {
       try {
-        const token = localStorage.getItem("studio_key") ?? "studio-api-key";
         const authHeaders = {
-          "x-studio-key": token,
+          "x-studio-key": token ?? "",
         };
         const response = await fetch(`${SERVER_URL}/api/sites`, {
           headers: authHeaders,

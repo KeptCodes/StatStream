@@ -66,3 +66,10 @@ type Site = {
   description: string | null;
   url: string;
 };
+
+type DefaultModal = {
+  extras: any;
+  isOpen: boolean;
+  onOpen: (extras?: any) => void;
+  onClose: () => void;
+};

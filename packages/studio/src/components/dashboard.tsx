@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Card,
@@ -21,13 +21,25 @@ import { SkeletonOverviewCards } from "@/components/skeletons/skeleton-overview-
 import { SkeletonOverviewChart } from "@/components/skeletons/skeleton-overview-chart";
 import { SkeletonRecentEvents } from "@/components/skeletons/skeleton-recent-events";
 import { SkeletonDataTable } from "@/components/skeletons/skeleton-data-table";
+import Link from "next/link";
+import { useStudioAuthStore } from "@/stores/modal-store";
 const Dashboard: React.FC = () => {
   const { data, isLoading, error, refetch, fetchStatus } = useAnalyticsData();
+  const [isKeySet, setIsKeySet] = useState(false);
+  const authModal = useStudioAuthStore();
+
+  useEffect(() => {
+    const storedKey = localStorage.getItem("studio_key");
+    if (storedKey) {
+      setIsKeySet(true);
+    }
+  }, [fetchStatus]);
 
   const calculatePercentageChange = (current: number, previous: number) => {
     if (previous === 0) return 100;
     return ((current - previous) / previous) * 100;
   };
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0">
@@ -249,6 +261,28 @@ const Dashboard: React.FC = () => {
           </>
         )}
       </div>
+
+      {!isKeySet && (
+        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex flex-col items-center justify-center gap-2 p-6 text-center">
+          <p className="text-lg font-medium text-foreground">
+            Studio Key is required to access this feature. You can find it on
+            your server.
+          </p>
+          <Link
+            href="#"
+            className="text-sm text-muted-foreground hover:underline"
+          >
+            How to find your Studio Key?
+          </Link>
+          <Button
+            variant="outline"
+            onClick={() => authModal.onOpen()}
+            className="mt-2"
+          >
+            Add Studio Key
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

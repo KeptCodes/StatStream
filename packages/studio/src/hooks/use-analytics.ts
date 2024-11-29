@@ -6,14 +6,15 @@ import { useQuery } from "@tanstack/react-query";
 export default function useAnalyticsData() {
   const searchParams = useSearchParams();
   const siteId = searchParams.get("site");
+  const token = localStorage.getItem("studio_key");
 
   const { data, error, isLoading, status, refetch, fetchStatus } = useQuery({
+    enabled: token != null,
     queryKey: ["analyticsData", siteId],
     queryFn: async () => {
       try {
-        const token = localStorage.getItem("studio_key") ?? "studio-api-key";
         const authHeaders = {
-          "x-studio-key": token,
+          "x-studio-key": token ?? "",
         };
         const siteId = searchParams.get("site");
         const q = siteId ? `?site=${siteId}` : "";
