@@ -2,19 +2,16 @@
 
 import { SERVER_URL } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-
+import Cookies from "js-cookie";
 export default function useSites() {
-  const token = localStorage.getItem("studio_key");
+  const token = Cookies.get("studio_key");
   const { data, error, isLoading, status, refetch } = useQuery({
     enabled: token != null,
     queryKey: ["sites_data"],
     queryFn: async () => {
       try {
-        const authHeaders = {
-          "x-studio-key": token ?? "",
-        };
         const response = await fetch(`${SERVER_URL}/api/sites`, {
-          headers: authHeaders,
+          credentials: "include",
         });
         const body = await response.json(); // Parse the response body
 

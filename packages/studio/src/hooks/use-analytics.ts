@@ -3,24 +3,22 @@
 import { SERVER_URL } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import Cookies from "js-cookie";
 export default function useAnalyticsData() {
   const searchParams = useSearchParams();
   const siteId = searchParams.get("site");
-  const token = localStorage.getItem("studio_key");
+  const token = Cookies.get("studio_key");
 
   const { data, error, isLoading, status, refetch, fetchStatus } = useQuery({
     enabled: token != null,
     queryKey: ["analyticsData", siteId],
     queryFn: async () => {
       try {
-        const authHeaders = {
-          "x-studio-key": token ?? "",
-        };
         const siteId = searchParams.get("site");
         const q = siteId ? `?site=${siteId}` : "";
 
         const response = await fetch(`${SERVER_URL}/api/dashboard${q}`, {
-          headers: authHeaders,
+          credentials: "include",
         });
         const body = await response.json(); // Parse the response body
 
