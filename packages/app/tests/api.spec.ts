@@ -6,7 +6,7 @@ import client from "../src/lib/discord";
 import server from "../src/lib/server";
 
 const authheaders = {
-  "x-studio-key": "studio-api-key",
+  cookies: "studio_key=studio-api-key",
 };
 // Mocking Discord client
 jest.mock("../src/lib/discord", () => ({
