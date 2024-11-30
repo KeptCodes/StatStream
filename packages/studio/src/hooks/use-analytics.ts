@@ -3,10 +3,11 @@
 import { SERVER_URL } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import Cookies from "js-cookie";
 export default function useAnalyticsData() {
   const searchParams = useSearchParams();
   const siteId = searchParams.get("site");
-  const token = localStorage.getItem("studio_key");
+  const token = Cookies.get("studio_key");
 
   const { data, error, isLoading, status, refetch, fetchStatus } = useQuery({
     enabled: token != null,

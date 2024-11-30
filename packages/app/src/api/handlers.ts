@@ -8,6 +8,22 @@ import logger from "../lib/logger";
 import { getDeviceInfo, getSessionId } from "../scripts/utilities";
 import { sendAnalyticsFn, trackUserBehavior } from "../scripts/core";
 
+export const authCheck = async (req: Request, res: Response): Promise<void> => {
+  try {
+    res.json({
+      success: true,
+    });
+    return;
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred";
+    logger.error("Error", { error: errorMessage });
+    res.status(500).json({
+      message: "Error in token verification",
+    });
+  }
+};
+
 export const trackAction = async (
   req: Request,
   res: Response

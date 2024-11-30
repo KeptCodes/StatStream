@@ -6,20 +6,23 @@ export const apiMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  const apikey = req.headers["x-studio-key"];
+  // Retrieve the API key from cookies
+  const studioKey = req.headers["x-studio-key"];
 
-  if (!apikey) {
+  if (!studioKey) {
     res.status(401).json({
-      message: "Not Authorized.",
+      message: "Not Authorized. Studio key is missing.",
     });
     return;
   }
-  if (apikey !== env.STUDIO_API_KEY) {
+
+  if (studioKey !== env.STUDIO_API_KEY) {
     res.status(401).json({
       message: "Invalid Studio API key.",
     });
     return;
   }
 
+  // If the key matches, proceed to the next middleware or handler
   next();
 };

@@ -11,25 +11,54 @@ import { useStudioAuthStore } from "@/stores/modal-store";
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
+import Cookies from "js-cookie";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function StudioAuthModal() {
   const modal = useStudioAuthStore();
+  const router = useRouter();
   const [studioKey, setStudioKey] = useState("");
+  const [serverURL, setServerURL] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Retrieve the studio key from local storage when the modal is mounted
-    const savedKey = localStorage.getItem("studio_key");
-    if (savedKey) {
-      setStudioKey(savedKey);
-    }
-  }, [modal.isOpen]); // Re-run this effect whenever the modal is opened
+    setServerURL(Cookies.get("server_url") || "");
+    setStudioKey(Cookies.get("studio_key") || "");
+  }, [modal.isOpen]);
 
-  const handleSave = () => {
-    if (studioKey.trim() !== "") {
-      localStorage.setItem("studio_key", studioKey); // Save the key to local storage
-      modal.onClose(); // Close the modal
-    } else {
-      alert("Studio Key cannot be empty!"); // Display an alert if the field is empty
+  const handleSave = async () => {
+    if (!serverURL || !studioKey) {
+      toast.error("Both Server URL and Studio Key are required!");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const authHeaders = {
+        "x-studio-key": studioKey,
+      };
+
+      const response = await fetch(`${serverURL}/api/check`, {
+        headers: authHeaders,
+      });
+
+      const result = await response.json();
+      if (response.ok && result.success) {
+        Cookies.set("server_url", serverURL, {
+          secure: true,
+          sameSite: "strict",
+        });
+        toast.success("Studio Key and Server URL saved successfully!");
+        modal.onClose();
+        router.refresh();
+      } else {
+        toast.error(result.message || "Failed to validate Studio Key!");
+      }
+    } catch (error) {
+      toast.error("An error occurred while validating the Studio Key.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -43,17 +72,27 @@ export default function StudioAuthModal() {
             platform's features.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="mb-4">
+        <div className="mb-4 space-y-2">
           <Input
-            type="text"
+            type="url"
+            value={serverURL}
+            disabled={loading}
+            onChange={(e) => setServerURL(e.target.value)}
+            placeholder="Enter Server URL"
+          />
+          <Input
             value={studioKey}
+            disabled={loading}
             onChange={(e) => setStudioKey(e.target.value)}
+            type="text"
             placeholder="Enter Studio Key"
           />
         </div>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <Button onClick={handleSave}>Save</Button>
+          <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
+          <Button onClick={handleSave} disabled={loading}>
+            {loading ? "Validating..." : "Save"}
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
