@@ -7,7 +7,7 @@ export const apiMiddleware = (
   next: NextFunction
 ) => {
   // Retrieve the API key from cookies
-  const studioKey = req.cookies.studio_key;
+  const studioKey = req.headers["x-studio-key"];
 
   if (!studioKey) {
     res.status(401).json({

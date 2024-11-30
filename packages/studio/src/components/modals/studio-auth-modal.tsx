@@ -34,13 +34,13 @@ export default function StudioAuthModal() {
     }
 
     setLoading(true);
-    Cookies.set("studio_key", studioKey, {
-      secure: true,
-      sameSite: "Strict",
-    });
     try {
+      const authHeaders = {
+        "x-studio-key": studioKey,
+      };
+
       const response = await fetch(`${serverURL}/api/check`, {
-        credentials: "include",
+        headers: authHeaders,
       });
 
       const result = await response.json();

@@ -14,11 +14,14 @@ export default function useAnalyticsData() {
     queryKey: ["analyticsData", siteId],
     queryFn: async () => {
       try {
+        const authHeaders = {
+          "x-studio-key": token ?? "",
+        };
         const siteId = searchParams.get("site");
         const q = siteId ? `?site=${siteId}` : "";
 
         const response = await fetch(`${SERVER_URL}/api/dashboard${q}`, {
-          credentials: "include",
+          headers: authHeaders,
         });
         const body = await response.json(); // Parse the response body
 

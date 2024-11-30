@@ -52,7 +52,6 @@
   "description": "",
   "dependencies": {
     "axios": "^1.7.7",
-    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.5",
@@ -69,7 +68,6 @@
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/github": "^11.0.1",
     "@types/bun": "latest",
-    "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",

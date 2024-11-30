@@ -9,9 +9,12 @@ export default function useSites() {
     enabled: token != null,
     queryKey: ["sites_data"],
     queryFn: async () => {
+      const authHeaders = {
+        "x-studio-key": token ?? "",
+      };
       try {
         const response = await fetch(`${SERVER_URL}/api/sites`, {
-          credentials: "include",
+          headers: authHeaders,
         });
         const body = await response.json(); // Parse the response body
 
