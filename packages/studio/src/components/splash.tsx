@@ -21,7 +21,7 @@ export default function AuthSplash() {
           server.
         </p>
         <Link
-          href="#"
+          href="https://keptcodes.github.io/StatStream/docs/v1/studio/analytics-studio-setup"
           className="text-sm text-muted-foreground hover:underline"
         >
           How to find your Studio Key?

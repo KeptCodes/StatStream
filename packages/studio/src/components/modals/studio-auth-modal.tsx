@@ -45,6 +45,10 @@ export default function StudioAuthModal() {
 
       const result = await response.json();
       if (response.ok && result.success) {
+        Cookies.set("studio_key", studioKey, {
+          secure: true,
+          sameSite: "strict",
+        });
         Cookies.set("server_url", serverURL, {
           secure: true,
           sameSite: "strict",

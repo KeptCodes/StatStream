@@ -17,6 +17,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://statstream.pages.dev"),
   title: "Studio - StatStream",
   description: "Studio to access analytics data captured by StatStream.",
   openGraph: {

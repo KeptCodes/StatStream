@@ -1,10 +1,10 @@
 "use client";
 
-import { SERVER_URL } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 export default function useSites() {
   const token = Cookies.get("studio_key");
+  const SERVER_URL = Cookies.get("server_url");
   const { data, error, isLoading, status, refetch } = useQuery({
     enabled: token != null,
     queryKey: ["sites_data"],
