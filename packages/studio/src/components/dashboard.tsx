@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Card,
@@ -22,13 +22,21 @@ import { SkeletonOverviewChart } from "@/components/skeletons/skeleton-overview-
 import { SkeletonRecentEvents } from "@/components/skeletons/skeleton-recent-events";
 import { SkeletonDataTable } from "@/components/skeletons/skeleton-data-table";
 
-const Dashboard: React.FC = () => {
+const Dashboard = () => {
+  const [isClient, setIsClient] = useState(false);
   const { data, isLoading, error, refetch, fetchStatus } = useAnalyticsData();
 
   const calculatePercentageChange = (current: number, previous: number) => {
     if (previous === 0) return 100;
     return ((current - previous) / previous) * 100;
   };
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">

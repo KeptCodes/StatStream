@@ -3,6 +3,8 @@ import Dashboard from "@/components/dashboard";
 import AuthSplash from "@/components/splash";
 import Footer from "@/components/footer";
 
+export const runtime = "edge";
+
 export default async function Home() {
   const cookieStore = await cookies();
   const serverURL = cookieStore.get("server_url");
