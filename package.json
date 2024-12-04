@@ -6,6 +6,9 @@
     "packages/docs",
     "packages/studio"
   ],
+  "engines": {
+    "node": "^18.18.0"
+  },
   "scripts": {
     "dev:app": "bun run --cwd packages/app dev",
     "build:app": "bun run --cwd packages/app build",
